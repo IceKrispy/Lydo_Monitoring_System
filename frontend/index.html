@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LYDO Monitoring Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Youth Monitoring System - Manolo Fortich</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Barangay</th>
+                        </tr>
+                    </thead>
+                    <tbody id="youth-data">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // This is the bridge to your Django Backend
+        fetch('http://127.0.0.1:8000/api/youth/')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('youth-data');
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center">No records found. Add some in Django Admin!</td></tr>';
+                } else {
+                    data.forEach(youth => {
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${youth.name}</td>
+                                <td>${youth.age}</td>
+                                <td>${youth.gender}</td>
+                                <td>${youth.barangay__name}</td>
+                            </tr>`;
+                    });
+                }
+            })
+            .catch(err => console.error('Connection error:', err));
+    </script>
+</body>
+</html>

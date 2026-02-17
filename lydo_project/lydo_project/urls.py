@@ -16,7 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from monitoring import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/youth/', views.youth_api, name='youth_api'),
+    path('', views.youth_api), # Add this line to make the home page show the data
 ]
+
+
