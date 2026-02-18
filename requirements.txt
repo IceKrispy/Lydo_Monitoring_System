@@ -1,2 +1,4 @@
-fastapi
-uvicorn[standard]
+fastapi(API framework)
+uvicorn[standard](Server)
+Django(WebFramework)
+better-profanity(The filter you are using for names)

@@ -180,6 +180,21 @@
         </div>
     </div>
 
+    <div class="modal fade" id="summaryModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="summary-title">Youth Full Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="summary-content"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const BARANGAYS = [
             {id: 1, name: "Agusan Canyon"}, {id: 2, name: "Alae"}, {id: 3, name: "Dahilayan"}, 
@@ -296,7 +311,11 @@
                     <td>${y.full_data.purok || '-'}</td>
                     <td>${y.education_level}</td>
                     <td class="admin-only">
-                        <button class="btn btn-sm btn-info" onclick='editYouth(${JSON.stringify(y)})'>Edit/View</button>
+                    <div class="btn-group">
+                         <button class="btn btn-sm btn-primary" onclick='viewFullSummary(${JSON.stringify(y)})'>View Summary</button>
+                        <button class="btn btn-sm btn-info" onclick='editYouth(${JSON.stringify(y)})'>Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick='deleteYouth(${y.id}, "${y.name}")'>Delete</button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
@@ -426,6 +445,90 @@
             const isOsy = document.getElementById('is_osy').checked;
             document.getElementById('osy-section').classList.toggle('d-none', !isOsy);
         }
+
+        function deleteYouth(id, name) {
+    if (confirm(`Are you sure you want to delete the record for ${name}?`)) {
+        fetch('/api/youth/', {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ id: id })
+        }).then(res => {
+            if(res.ok) {
+                alert('Deleted successfully');
+                fetchYouths(); // Refresh the table
+            } else {
+                res.json().then(e => alert(e.error));
+            }
+        });
+    }
+}
+function deleteYouth(id, name) {
+            if (confirm(`Are you sure you want to delete the record for ${name}?`)) {
+                fetch('/api/youth/', {
+                    method: 'DELETE',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ id: id })
+                }).then(res => {
+                    if(res.ok) {
+                        alert('Deleted successfully');
+                        fetchYouths();
+                    } else {
+                        res.json().then(e => alert(e.error));
+                    }
+                });
+            }
+        }
+        function viewFullSummary(y) {
+            const d = y.full_data;
+            const content = document.getElementById('summary-content');
+            
+            const fmt = (val) => val ? '<span class="text-success fw-bold">Yes</span>' : '<span class="text-danger">No</span>';
+
+            content.innerHTML = `
+                <div class="row mb-3">
+                    <div class="col-md-6 border-end">
+                        <h6 class="text-primary border-bottom">Personal Information</h6>
+                        <p><strong>Name:</strong> ${y.name}</p>
+                        <p><strong>Sex:</strong> ${y.sex} | <strong>Status:</strong> ${d.civil_status}</p>
+                        <p><strong>Birthdate:</strong> ${d.birthdate || 'N/A'}</p>
+                        <p><strong>Religion:</strong> ${d.religion || 'N/A'}</p>
+                        <p><strong>Contact:</strong> ${d.contact_number || 'N/A'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary border-bottom">Education & Work</h6>
+                        <p><strong>Level:</strong> ${y.education_level}</p>
+                        <p><strong>Course:</strong> ${d.course || 'N/A'}</p>
+                        <p><strong>School:</strong> ${d.school_name || 'N/A'}</p>
+                        <p><strong>Work Status:</strong> ${d.work_status || 'N/A'}</p>
+                        <p><strong>Scholar:</strong> ${fmt(d.is_scholar)} (${d.scholarship_program || 'N/A'})</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-4 border-end">
+                        <h6 class="text-primary border-bottom">Classifications</h6>
+                        <p>In School: ${fmt(d.is_in_school)}</p>
+                        <p>OSY: ${fmt(d.is_osy)}</p>
+                        <p>4Ps: ${fmt(d.is_4ps)}</p>
+                    </div>
+                    <div class="col-md-4 border-end">
+                        <h6 class="text-primary border-bottom">Special Needs/Group</h6>
+                        <p>PWD: ${fmt(d.is_pwd)} (${d.disability_type || 'None'})</p>
+                        <p>IP/7 Tribes: ${fmt(d.is_ip)} (${d.tribe_name || 'N/A'})</p>
+                        <p>Muslim: ${fmt(d.is_muslim)} (${d.muslim_group || 'N/A'})</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-primary border-bottom">Civic / Others</h6>
+                        <p>SK Voter: ${fmt(d.registered_voter_sk)}</p>
+                        <p>National Voter: ${fmt(d.registered_voter_national)}</p>
+                        <p>Attended KK: ${fmt(d.attended_kk_assembly)} (${d.kk_assembly_times || 0} times)</p>
+                    </div>
+                </div>
+            `;
+            
+            new bootstrap.Modal(document.getElementById('summaryModal')).show();
+        }
+    </script>
     </script>
 </body>
 </html>
