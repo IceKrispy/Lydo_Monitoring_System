@@ -1,0 +1,26 @@
+/* frontend/style.css */
+
+.admin-only {
+    display: none;
+}
+
+.form-section-title {
+    font-weight: bold;
+    color: #0d6efd;
+    margin-top: 15px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+}
+
+.barangay-card {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, border-color 0.2s;
+    height: 100%;
+    border: 1px solid rgba(0,0,0,0.125);
+}
+
+.barangay-card:hover {
+    transform: scale(1.03);
+    background-color: #f8f9fa;
+    border-color: #0d6efd !important;
+}

@@ -16,6 +16,16 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ------------------ Debug helpers (crucial) ------------------
+# Quick checklist to debug missing CSS/static templates:
+# - Ensure `TEMPLATES['DIRS']` points to the frontend folder so
+#   `{% load static %}` and `{% static 'style.css' %}` resolve correctly.
+# - During local development `DEBUG = True` lets Django serve files
+#   from the paths listed in `STATICFILES_DIRS` (set below).
+# - If you open the HTML file directly (file://) the `{% %}` tags
+#   are not processed — run the Django server and visit `/` instead.
+# - To rule out caching, hard-refresh browser or add `?v=1` to CSS URL.
+# ------------------------------------------------------------
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -121,6 +131,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, '..', 'frontend'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
